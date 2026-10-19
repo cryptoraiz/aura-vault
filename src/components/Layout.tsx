@@ -3,6 +3,7 @@ import { ConnectKitButton } from 'connectkit'
 import { useAccount, useSwitchChain } from 'wagmi'
 import { Plus, Activity, Wallet, LayoutGrid, AlertTriangle } from 'lucide-react'
 import auraLogo from '../assets/aura-vault-logo.svg'
+import Wordmark from './Wordmark'
 import { ARC_TESTNET_ID, ARC_MAINNET_ID } from '../config'
 import { shortAddr, addrGradient } from '../utils/format'
 
@@ -112,9 +113,9 @@ export default function Layout({ children, hideNav }: LayoutProps) {
         >
           <div className="max-w-6xl mx-auto px-4 w-full flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 font-bold text-lg" style={{ color: '#F5F7FA' }}>
-            <img src={auraLogo} alt="Aura Vault" width={32} height={32} style={{ borderRadius: 8, display: 'block' }} />
-            Aura Vault
+          <Link to="/" className="flex items-center" style={{ gap: 10, textDecoration: 'none' }}>
+            <img src={auraLogo} alt="Aura Vault" width={32} height={32} style={{ borderRadius: 8, display: 'block', flexShrink: 0 }} />
+            <Wordmark showTagline />
           </Link>
 
           {/* Nav links — centered */}
@@ -186,9 +187,9 @@ export default function Layout({ children, hideNav }: LayoutProps) {
             borderBottom: '1px solid rgba(255,255,255,0.06)',
           }}
         >
-          <Link to="/" className="flex items-center gap-2 font-bold" style={{ color: '#F5F7FA' }}>
-            <img src={auraLogo} alt="Aura Vault" width={28} height={28} style={{ borderRadius: 6, display: 'block' }} />
-            Aura Vault
+          <Link to="/" className="flex items-center" style={{ gap: 8, textDecoration: 'none' }}>
+            <img src={auraLogo} alt="Aura Vault" width={28} height={28} style={{ borderRadius: 6, display: 'block', flexShrink: 0 }} />
+            <Wordmark />
           </Link>
           <div className="flex items-center gap-2">
             <NetworkPill
