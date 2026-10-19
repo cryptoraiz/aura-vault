@@ -225,3 +225,7 @@
 {"level":"debug","message":"[vite] connected.","timestamp":1792432633576}
 {"level":"debug","message":"[vite] connected.","timestamp":1792432656934}
 {"level":"debug","message":"[vite] connected.","timestamp":1792432657546}
+{"level":"log","message":"[vite] server connection lost. Polling for restart...","timestamp":1792433081261}
+{"level":"debug","message":"[vite] connected.","timestamp":1792433083861}
+{"level":"debug","message":"[vite] connected.","timestamp":1792433084167}
+{"level":"debug","message":"[vite] connected.","timestamp":1792433107250}
