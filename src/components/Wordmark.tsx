@@ -1,19 +1,20 @@
 /**
- * <Wordmark /> — Aura Vault brand name with gradient "Aura", bold "Vault",
- * and an optional crisp tagline hidden on mobile.
+ * <Wordmark /> — Aura Vault brand name.
+ * "Aura" = solid white bold, "Vault" = blue-cyan gradient bold.
  *
  * Usage:
  *   <Wordmark />               — default (header, no tagline)
  *   <Wordmark showTagline />   — with tagline (desktop header / loading screens)
  */
 
-const GRADIENT = 'linear-gradient(90deg, #4FC3FF 0%, #B995FF 55%, #6EE7B7 100%)'
+const VAULT_GRADIENT = 'linear-gradient(90deg, #60A5FA 0%, #38BDF8 50%, #67E8F9 100%)'
 
 const BASE: React.CSSProperties = {
   fontSize: 20,
-  letterSpacing: '0.02em',
+  letterSpacing: '-0.02em', // tracking-tight
   lineHeight: 1,
   fontFamily: "'Space Grotesk', 'Sora', system-ui, sans-serif",
+  fontWeight: 700,
 }
 
 interface WordmarkProps {
@@ -24,42 +25,32 @@ interface WordmarkProps {
 export default function Wordmark({ showTagline = false }: WordmarkProps) {
   return (
     <span className="flex flex-col justify-center" style={{ gap: 4 }}>
-      {/* Name row — no text-shadow so gradient text stays crisp */}
-      <span className="flex items-center" style={{ gap: 0 }}>
-        {/* "Aura" — gradient */}
-        <span
-          style={{
-            ...BASE,
-            fontWeight: 600,
-            background: GRADIENT,
-            WebkitBackgroundClip: 'text',
-            backgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            color: 'transparent',
-            // Extra padding prevents the gradient from being clipped at edges
-            paddingBottom: 2,
-            paddingTop: 2,
-          }}
-        >
+      {/* Name row */}
+      <span className="flex items-center" style={{ gap: 6 }}>
+        {/* "Aura" — solid white */}
+        <span style={{ ...BASE, color: '#FFFFFF' }}>
           Aura
         </span>
 
-        {/* Natural inter-word gap: 5px */}
-        <span style={{ display: 'inline-block', width: 5 }} aria-hidden />
-
-        {/* "Vault" — solid white, heavier weight */}
+        {/* "Vault" — blue-cyan gradient */}
         <span
           style={{
             ...BASE,
             fontWeight: 800,
-            color: '#FFFFFF',
+            background: VAULT_GRADIENT,
+            WebkitBackgroundClip: 'text',
+            backgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            color: 'transparent',
+            paddingBottom: 2,
+            paddingTop: 2,
           }}
         >
           Vault
         </span>
       </span>
 
-      {/* Tagline — desktop only, no shadow/blur for crispness */}
+      {/* Tagline — desktop only, crisp, no shadow */}
       {showTagline && (
         <span
           className="hidden sm:block"
