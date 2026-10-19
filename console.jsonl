@@ -219,3 +219,9 @@
 {"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792432276512}
 {"level":"debug","message":"[vite] connected.","timestamp":1792432302224}
 {"level":"debug","message":"[vite] connected.","timestamp":1792432314514}
+{"level":"log","message":"[vite] server connection lost. Polling for restart...","timestamp":1792432589074}
+{"level":"debug","message":"[vite] connected.","timestamp":1792432603509}
+{"level":"debug","message":"[vite] connected.","timestamp":1792432632942}
+{"level":"debug","message":"[vite] connected.","timestamp":1792432633576}
+{"level":"debug","message":"[vite] connected.","timestamp":1792432656934}
+{"level":"debug","message":"[vite] connected.","timestamp":1792432657546}

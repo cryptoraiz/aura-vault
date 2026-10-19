@@ -1,17 +1,13 @@
 /**
  * <Wordmark /> — Aura Vault brand name with gradient "Aura", bold "Vault",
- * a subtle glow, and an optional tagline hidden on mobile.
+ * and an optional crisp tagline hidden on mobile.
  *
  * Usage:
- *   <Wordmark />               — default (header)
- *   <Wordmark showTagline />   — with tagline (footer / loading screens)
+ *   <Wordmark />               — default (header, no tagline)
+ *   <Wordmark showTagline />   — with tagline (desktop header / loading screens)
  */
 
 const GRADIENT = 'linear-gradient(90deg, #4FC3FF 0%, #B995FF 55%, #6EE7B7 100%)'
-
-const GLOW: React.CSSProperties = {
-  textShadow: '0 0 18px rgba(79,140,255,0.25)',
-}
 
 const BASE: React.CSSProperties = {
   fontSize: 20,
@@ -27,9 +23,9 @@ interface WordmarkProps {
 
 export default function Wordmark({ showTagline = false }: WordmarkProps) {
   return (
-    <span className="flex flex-col justify-center" style={{ gap: 2 }}>
-      {/* Name row */}
-      <span className="flex items-baseline" style={{ gap: 4, ...GLOW }}>
+    <span className="flex flex-col justify-center" style={{ gap: 4 }}>
+      {/* Name row — no text-shadow so gradient text stays crisp */}
+      <span className="flex items-center" style={{ gap: 0 }}>
         {/* "Aura" — gradient */}
         <span
           style={{
@@ -40,8 +36,7 @@ export default function Wordmark({ showTagline = false }: WordmarkProps) {
             backgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
             color: 'transparent',
-            // Prevent clipping: padding + negative margin trick keeps
-            // descenders and the gradient edge from being cut off.
+            // Extra padding prevents the gradient from being clipped at edges
             paddingBottom: 2,
             paddingTop: 2,
           }}
@@ -49,8 +44,8 @@ export default function Wordmark({ showTagline = false }: WordmarkProps) {
           Aura
         </span>
 
-        {/* thin space — visually separates the two words */}
-        <span style={{ display: 'inline-block', width: 3 }} aria-hidden />
+        {/* Natural inter-word gap: 5px */}
+        <span style={{ display: 'inline-block', width: 5 }} aria-hidden />
 
         {/* "Vault" — solid white, heavier weight */}
         <span
@@ -64,18 +59,19 @@ export default function Wordmark({ showTagline = false }: WordmarkProps) {
         </span>
       </span>
 
-      {/* Tagline — desktop only */}
+      {/* Tagline — desktop only, no shadow/blur for crispness */}
       {showTagline && (
         <span
           className="hidden sm:block"
           style={{
-            fontSize: 9,
-            letterSpacing: '0.18em',
+            fontSize: 10,
+            fontWeight: 500,
+            letterSpacing: '0.12em',
             textTransform: 'uppercase',
-            color: '#8B93A7',
+            color: '#94A3B8',
             lineHeight: 1,
             fontFamily: "'Space Grotesk', system-ui, sans-serif",
-            fontWeight: 500,
+            textShadow: 'none',
           }}
         >
           Revenue Splits on Arc
