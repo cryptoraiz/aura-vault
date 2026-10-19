@@ -59,7 +59,7 @@ export default function TxButton({
           </motion.span>
         )}
         {state === 'success' && (
-          <motion.span key="success" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} className="flex items-center gap-2" style={{ color: '#2DD4A0' }}>
+          <motion.span key="success" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} className="flex items-center gap-2" style={{ color: '#FFFFFF' }}>
             <Check size={14} />
             Done
           </motion.span>

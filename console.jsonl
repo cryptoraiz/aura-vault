@@ -269,3 +269,19 @@
 {"level":"debug","message":"[vite] hot updated: /src/pages/Activity.tsx","timestamp":1792442990664}
 {"level":"debug","message":"[vite] hot updated: /src/pages/MyVaults.tsx","timestamp":1792442990664}
 {"level":"debug","message":"[vite] connected.","timestamp":1792443037592}
+{"level":"log","message":"[vite] server connection lost. Polling for restart...","timestamp":1792443616525}
+{"level":"debug","message":"[vite] hot updated: /src/components/TxButton.tsx","timestamp":1792443660887}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792443660887}
+{"level":"debug","message":"[vite] hot updated: /src/components/TxButton.tsx","timestamp":1792443660890}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792443660891}
+{"level":"debug","message":"[vite] hot updated: /src/pages/PayPage.tsx","timestamp":1792443661836}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792443661836}
+{"level":"debug","message":"[vite] hot updated: /src/pages/PayPage.tsx","timestamp":1792443664199}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792443664199}
+{"level":"debug","message":"[vite] hot updated: /src/pages/PayPage.tsx","timestamp":1792443674621}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792443674621}
+{"level":"debug","message":"[vite] hot updated: /src/pages/PayPage.tsx","timestamp":1792443674623}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792443674623}
+{"level":"debug","message":"[vite] hot updated: /src/pages/PayPage.tsx","timestamp":1792443674708}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792443674708}
+{"level":"debug","message":"[vite] connected.","timestamp":1792443706216}

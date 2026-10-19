@@ -3,7 +3,9 @@ import { useParams } from 'react-router-dom'
 import { useAccount, useWriteContract, useReadContract } from 'wagmi'
 import { ConnectKitButton } from 'connectkit'
 import { motion } from 'framer-motion'
-import { Shield, Vault } from 'lucide-react'
+import { Shield } from 'lucide-react'
+import auraLogo from '../assets/aura-vault-logo.svg'
+import Wordmark from '../components/Wordmark'
 import { toast } from 'sonner'
 import { erc20Abi } from 'viem'
 import { AURA_VAULT_ABI, getVaultAddress } from '../vault-config'
@@ -102,16 +104,11 @@ export default function PayPage() {
       <motion.div
         initial={{ opacity: 0, y: -16 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex items-center gap-2 mb-8"
-        style={{ color: '#F5F7FA' }}
+        className="flex items-center mb-8"
+        style={{ gap: 10 }}
       >
-        <div
-          className="w-9 h-9 rounded-xl flex items-center justify-center"
-          style={{ background: 'linear-gradient(135deg,#0052FF,#00D2FF)' }}
-        >
-          <Vault size={17} color="white" />
-        </div>
-        <span className="text-xl font-bold">Aura Vault</span>
+        <img src={auraLogo} alt="Aura Vault" width={36} height={36} style={{ borderRadius: 9, display: 'block', flexShrink: 0 }} />
+        <Wordmark showTagline={false} />
       </motion.div>
 
       {/* Pay card */}
