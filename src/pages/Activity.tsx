@@ -8,7 +8,7 @@ import { getVaultAddress } from '../vault-config'
 import { requireChain, buildTxExplorerUrl } from '@/onchain-facts'
 import GlassCard from '../components/GlassCard'
 import { formatUsdc, shortAddr, relativeTime } from '../utils/format'
-import { ARC_TESTNET_ID, ARC_MAINNET_ID, ARC_TESTNET_RPC, ARC_MAINNET_RPC } from '../config'
+import { ARC_TESTNET_ID, ARC_MAINNET_ID } from '../config'
 
 type EventKind = 'VaultCreated' | 'DepositReceived' | 'PaymentReleased'
 type FilterKind = 'all' | 'deposits' | 'withdrawals'
@@ -142,10 +142,9 @@ export default function Activity() {
     setLoading(true)
     try {
       const chainConfig = activeChain === ARC_MAINNET_ID ? arc : arcTestnet
-      const rpcUrl = activeChain === ARC_MAINNET_ID ? ARC_MAINNET_RPC : ARC_TESTNET_RPC
       const client = createPublicClient({
         chain: chainConfig,
-        transport: http(rpcUrl),
+        transport: http(),
       })
 
       const currentBlock = await client.getBlockNumber()
