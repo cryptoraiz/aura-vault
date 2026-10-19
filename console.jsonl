@@ -258,3 +258,14 @@
 {"level":"debug","message":"[vite] connected.","timestamp":1792437229510}
 {"level":"log","message":"[vite] server connection lost. Polling for restart...","timestamp":1792438980674}
 {"level":"debug","message":"[vite] connected.","timestamp":1792439230698}
+{"level":"log","message":"[vite] server connection lost. Polling for restart...","timestamp":1792441361286}
+{"level":"debug","message":"[vite] connected.","timestamp":1792441370880}
+{"level":"debug","message":"[vite] connected.","timestamp":1792441390843}
+{"level":"log","message":"[vite] server connection lost. Polling for restart...","timestamp":1792442964963}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792442990663}
+{"level":"debug","message":"[vite] hot updated: /src/pages/VaultOverview.tsx","timestamp":1792442990664}
+{"level":"debug","message":"[vite] hot updated: /src/pages/PayPage.tsx","timestamp":1792442990664}
+{"level":"debug","message":"[vite] hot updated: /src/pages/CreateVault.tsx","timestamp":1792442990664}
+{"level":"debug","message":"[vite] hot updated: /src/pages/Activity.tsx","timestamp":1792442990664}
+{"level":"debug","message":"[vite] hot updated: /src/pages/MyVaults.tsx","timestamp":1792442990664}
+{"level":"debug","message":"[vite] connected.","timestamp":1792443037592}

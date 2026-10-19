@@ -9,6 +9,7 @@ Decentralized USDC vault protocol for escrow-style deposits and automatic revenu
 | Contract | Network | Address | Explorer |
 |---|---|---|---|
 | AuraVault | Arc Testnet | `0xc121dcbe21f36b4605ea5e11ffdb328233c3b37b` | [View](https://explorer.testnet.arc.io/address/0xc121dcbe21f36b4605ea5e11ffdb328233c3b37b) |
+| AuraVault | Arc Mainnet | `0x75d165D2Ae19AbFA38a7906A365409c554acA04D` | [View](https://explorer.arc.io/address/0x75d165D2Ae19AbFA38a7906A365409c554acA04D) |
 
 **Deployment date:** 2026-10-19
 **Deployer wallet:** 3c2464b2-8369-52e2-a782-800bbeca5396

@@ -6,7 +6,7 @@
 
 // Will be populated after deploy — imported dynamically to avoid import errors before build
 export const AURA_VAULT_ADDRESS_TESTNET = '0xc121dcbe21f36b4605ea5e11ffdb328233c3b37b' as `0x${string}`
-export const AURA_VAULT_ADDRESS_MAINNET = '' as `0x${string}` // set after mainnet deploy
+export const AURA_VAULT_ADDRESS_MAINNET = '0x75d165D2Ae19AbFA38a7906A365409c554acA04D' as `0x${string}`
 
 export const AURA_VAULT_ABI = [
   // createVault
