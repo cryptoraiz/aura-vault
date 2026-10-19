@@ -234,7 +234,7 @@ export default function Activity() {
   ]
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
+    <div className="max-w-6xl mx-auto px-4 py-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-1" style={{ color: '#F5F7FA', letterSpacing: '-0.02em' }}>
           Activity
