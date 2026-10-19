@@ -1,7 +1,8 @@
 import { Link, useLocation } from 'react-router-dom'
 import { ConnectKitButton } from 'connectkit'
 import { useAccount, useSwitchChain } from 'wagmi'
-import { Vault, Plus, Activity, Wallet, LayoutGrid, AlertTriangle } from 'lucide-react'
+import { Plus, Activity, Wallet, LayoutGrid, AlertTriangle } from 'lucide-react'
+import auraLogo from '../assets/aura-vault-logo.svg'
 import { ARC_TESTNET_ID, ARC_MAINNET_ID } from '../config'
 import { shortAddr, addrGradient } from '../utils/format'
 
@@ -111,12 +112,7 @@ export default function Layout({ children, hideNav }: LayoutProps) {
         >
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 font-bold text-lg" style={{ color: '#F5F7FA' }}>
-            <div
-              className="w-8 h-8 rounded-xl flex items-center justify-center"
-              style={{ background: 'linear-gradient(135deg,#0052FF,#00D2FF)' }}
-            >
-              <Vault size={16} color="white" />
-            </div>
+            <img src={auraLogo} alt="Aura Vault" width={32} height={32} style={{ borderRadius: 8, display: 'block' }} />
             Aura Vault
           </Link>
 
@@ -189,12 +185,7 @@ export default function Layout({ children, hideNav }: LayoutProps) {
           }}
         >
           <Link to="/" className="flex items-center gap-2 font-bold" style={{ color: '#F5F7FA' }}>
-            <div
-              className="w-7 h-7 rounded-lg flex items-center justify-center"
-              style={{ background: 'linear-gradient(135deg,#0052FF,#00D2FF)' }}
-            >
-              <Vault size={13} color="white" />
-            </div>
+            <img src={auraLogo} alt="Aura Vault" width={28} height={28} style={{ borderRadius: 6, display: 'block' }} />
             Aura Vault
           </Link>
           <div className="flex items-center gap-2">

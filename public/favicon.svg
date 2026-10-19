@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="512" height="512" role="img" aria-label="Aura Vault">
+  <defs>
+    <linearGradient id="gBlue" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2F6BFF"/>
+      <stop offset="1" stop-color="#4FC3FF"/>
+    </linearGradient>
+    <linearGradient id="gViolet" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7C5CFF"/>
+      <stop offset="1" stop-color="#B995FF"/>
+    </linearGradient>
+    <linearGradient id="gMint" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#22D3EE"/>
+      <stop offset="1" stop-color="#6EE7B7"/>
+    </linearGradient>
+    <radialGradient id="gAura" cx="50%" cy="50%" r="50%">
+      <stop offset="0.55" stop-color="#4F8CFF" stop-opacity="0"/>
+      <stop offset="0.82" stop-color="#4F8CFF" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#4F8CFF" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="gKey" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#BFD8FF"/>
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="28" fill="#0A0E1A"/>
+  <circle cx="64" cy="64" r="60" fill="url(#gAura)"/>
+  <circle cx="64" cy="64" r="52" fill="none" stroke="#4F8CFF" stroke-opacity="0.18" stroke-width="1.5"/>
+  <g transform="rotate(-90 64 64)" fill="none" stroke-width="11" stroke-linecap="round">
+    <circle cx="64" cy="64" r="38" stroke="url(#gBlue)"   stroke-dasharray="60.5 238.76" stroke-dashoffset="-15.5"/>
+    <circle cx="64" cy="64" r="38" stroke="url(#gViolet)" stroke-dasharray="48 238.76"   stroke-dashoffset="-107"/>
+    <circle cx="64" cy="64" r="38" stroke="url(#gMint)"   stroke-dasharray="37.3 238.76" stroke-dashoffset="-186"/>
+  </g>
+  <circle cx="64" cy="64" r="24" fill="none" stroke="#FFFFFF" stroke-opacity="0.12" stroke-width="1.5"/>
+  <circle cx="64" cy="59" r="7" fill="url(#gKey)"/>
+  <path d="M60.2 62.5 L67.8 62.5 L70.5 77 L57.5 77 Z" fill="url(#gKey)"/>
+</svg>
