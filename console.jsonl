@@ -144,3 +144,9 @@
 {"level":"debug","message":"[vite] connected.","timestamp":1792427088440}
 {"level":"log","message":"[vite] server connection lost. Polling for restart...","timestamp":1792427463190}
 {"level":"debug","message":"[vite] connected.","timestamp":1792427537534}
+{"level":"error","message":"[vite] Failed to reload /src/components/Layout.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above)","timestamp":1792429051031}
+{"level":"debug","message":"[vite] hot updated: /src/components/Layout.tsx","timestamp":1792429051564}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792429051564}
+{"level":"debug","message":"[vite] hot updated: /src/components/Layout.tsx","timestamp":1792429102192}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792429102192}
+{"level":"debug","message":"[vite] connected.","timestamp":1792429348424}

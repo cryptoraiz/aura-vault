@@ -103,20 +103,21 @@ export default function Layout({ children, hideNav }: LayoutProps) {
       {/* Top navigation — hidden on /pay/:id */}
       {!hideNav && (
         <header
-          className="sticky top-0 z-40 flex items-center justify-between px-6 h-16 hidden sm:flex"
+          className="sticky top-0 z-40 hidden sm:flex h-16"
           style={{
             background: 'rgba(5,7,13,0.85)',
             backdropFilter: 'blur(20px)',
             borderBottom: '1px solid rgba(255,255,255,0.06)',
           }}
         >
+          <div className="max-w-5xl mx-auto w-full flex items-center justify-between px-6">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 font-bold text-lg" style={{ color: '#F5F7FA' }}>
             <img src={auraLogo} alt="Aura Vault" width={32} height={32} style={{ borderRadius: 8, display: 'block' }} />
             Aura Vault
           </Link>
 
-          {/* Nav links */}
+          {/* Nav links — centered */}
           <nav className="hidden md:flex items-center gap-1">
             {navLinks.map(({ to, label }) => (
               <Link
@@ -171,6 +172,7 @@ export default function Layout({ children, hideNav }: LayoutProps) {
               )}
             </ConnectKitButton.Custom>
           </div>
+          </div>{/* /max-w-5xl container */}
         </header>
       )}
 
