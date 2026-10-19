@@ -229,3 +229,25 @@
 {"level":"debug","message":"[vite] connected.","timestamp":1792433083861}
 {"level":"debug","message":"[vite] connected.","timestamp":1792433084167}
 {"level":"debug","message":"[vite] connected.","timestamp":1792433107250}
+{"level":"debug","message":"[vite] connected.","timestamp":1792433436509}
+{"level":"debug","message":"[vite] connected.","timestamp":1792434241053}
+{"level":"log","message":"[vite] server connection lost. Polling for restart...","timestamp":1792434411441}
+{"level":"error","message":"Warning: You are calling ReactDOMClient.createRoot() on a container that has already been passed to createRoot() before. Instead, call root.render() on the existing root instead if you want to update it.","timestamp":1792434479489}
+{"level":"error","message":"Warning: You are calling ReactDOMClient.createRoot() on a container that has already been passed to createRoot() before. Instead, call root.render() on the existing root instead if you want to update it.","timestamp":1792434479500}
+{"level":"debug","message":"[vite] invalidate /src/main.tsx: Could not Fast Refresh (\"true\" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports","timestamp":1792434479511}
+{"level":"debug","message":"[vite] hot updated: /src/main.tsx","timestamp":1792434479511}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792434479511}
+{"level":"debug","message":"[vite] invalidate /src/main.tsx: Could not Fast Refresh (\"true\" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports","timestamp":1792434479679}
+{"level":"debug","message":"[vite] hot updated: /src/main.tsx","timestamp":1792434479679}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792434479679}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792434504735}
+{"level":"debug","message":"(previous line repeated 2× more)","timestamp":1792434520083}
+{"level":"error","message":"Warning: You are calling ReactDOMClient.createRoot() on a container that has already been passed to createRoot() before. Instead, call root.render() on the existing root instead if you want to update it.","timestamp":1792434520083}
+{"level":"debug","message":"[vite] invalidate /src/main.tsx: Could not Fast Refresh (\"true\" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports","timestamp":1792434520092}
+{"level":"debug","message":"[vite] hot updated: /src/main.tsx","timestamp":1792434520092}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792434520092}
+{"level":"debug","message":"(previous line repeated 1× more)","timestamp":1792434537543}
+{"level":"error","message":"Warning: You are calling ReactDOMClient.createRoot() on a container that has already been passed to createRoot() before. Instead, call root.render() on the existing root instead if you want to update it.","timestamp":1792434537543}
+{"level":"debug","message":"[vite] invalidate /src/main.tsx: Could not Fast Refresh (\"true\" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports","timestamp":1792434537544}
+{"level":"debug","message":"[vite] hot updated: /src/main.tsx","timestamp":1792434537544}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792434537544}

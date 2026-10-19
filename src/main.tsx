@@ -86,7 +86,8 @@ createRoot(document.getElementById('root')!).render(
           <App />
           <StudioWatermark />
           <Toaster
-            position="top-center"
+            position="bottom-right"
+            duration={4500}
             toastOptions={{
               style: {
                 background: 'rgba(12,14,24,0.95)',
