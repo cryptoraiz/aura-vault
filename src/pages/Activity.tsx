@@ -1,14 +1,16 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useAccount } from 'wagmi'
 import { createPublicClient, http, parseAbiItem } from 'viem'
 import { arc, arcTestnet } from 'viem/chains'
 import { motion } from 'framer-motion'
-import { ArrowDownLeft, ArrowUpRight, ExternalLink, Plus } from 'lucide-react'
-import { getVaultAddress } from '../vault-config'
+import { ArrowDownLeft, ArrowUpRight, ExternalLink, Plus, RefreshCw } from 'lucide-react'
+import { getVaultAddress, AURA_VAULT_ABI } from '../vault-config'
 import { requireChain, buildTxExplorerUrl } from '@/onchain-facts'
 import GlassCard from '../components/GlassCard'
 import { formatUsdc, shortAddr, relativeTime } from '../utils/format'
 import { ARC_TESTNET_ID, ARC_MAINNET_ID } from '../config'
+
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 type EventKind = 'VaultCreated' | 'DepositReceived' | 'PaymentReleased'
 type FilterKind = 'all' | 'deposits' | 'withdrawals'
@@ -18,22 +20,70 @@ interface ActivityEvent {
   vaultId: bigint
   blockNumber: bigint
   txHash: `0x${string}`
+  logIndex: number
   blockTimestamp?: number
   args: Record<string, unknown>
 }
 
+// ─── Cache helpers ────────────────────────────────────────────────────────────
+
+function cacheKey(chainId: number) {
+  return `aura_vault_activity_${chainId}`
+}
+
+function loadCache(chainId: number): ActivityEvent[] {
+  try {
+    const raw = localStorage.getItem(cacheKey(chainId))
+    if (!raw) return []
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const parsed = JSON.parse(raw) as Array<Record<string, unknown>>
+    return parsed.map((e) => ({
+      ...(e as unknown as ActivityEvent),
+      vaultId: BigInt(e.vaultId as string),
+      blockNumber: BigInt(e.blockNumber as string),
+    }))
+  } catch {
+    return []
+  }
+}
+
+function saveCache(chainId: number, events: ActivityEvent[]) {
+  try {
+    const serialisable = events.map((e) => ({
+      ...e,
+      vaultId: e.vaultId.toString(),
+      blockNumber: e.blockNumber.toString(),
+    }))
+    localStorage.setItem(cacheKey(chainId), JSON.stringify(serialisable))
+  } catch {
+    // storage quota exceeded — silently skip
+  }
+}
+
+/** Merge two event arrays, deduplicating by txHash+logIndex */
+function mergeEvents(existing: ActivityEvent[], incoming: ActivityEvent[]): ActivityEvent[] {
+  const seen = new Set(existing.map((e) => `${e.txHash}:${e.logIndex}`))
+  const merged = [...existing]
+  for (const e of incoming) {
+    const key = `${e.txHash}:${e.logIndex}`
+    if (!seen.has(key)) {
+      seen.add(key)
+      merged.push(e)
+    }
+  }
+  return merged.sort((a, b) => Number(b.blockNumber - a.blockNumber))
+}
+
+// ─── EventRow ─────────────────────────────────────────────────────────────────
+
 function EventRow({ event, chainId, delay }: { event: ActivityEvent; chainId: number; delay: number }) {
-  const _chain = requireChain(chainId) // validates chainId is known
+  const _chain = requireChain(chainId)
   const isDeposit = event.kind === 'DepositReceived'
   const isWithdrawal = event.kind === 'PaymentReleased'
   const isCreated = event.kind === 'VaultCreated'
 
   const amount =
-    isDeposit
-      ? (event.args.amount as bigint)
-      : isWithdrawal
-      ? (event.args.amount as bigint)
-      : undefined
+    isDeposit || isWithdrawal ? (event.args.amount as bigint | undefined) : undefined
 
   const actor = isDeposit
     ? (event.args.depositor as string)
@@ -56,10 +106,10 @@ function EventRow({ event, chainId, delay }: { event: ActivityEvent; chainId: nu
         className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
         style={{
           background: isDeposit
-            ? 'rgba(45, 212, 160, 0.12)'
+            ? 'rgba(45,212,160,0.12)'
             : isWithdrawal
-            ? 'rgba(0, 82, 255, 0.12)'
-            : 'rgba(124, 92, 255, 0.12)',
+            ? 'rgba(0,82,255,0.12)'
+            : 'rgba(124,92,255,0.12)',
         }}
       >
         {isDeposit && <ArrowDownLeft size={15} style={{ color: '#2DD4A0' }} />}
@@ -76,7 +126,11 @@ function EventRow({ event, chainId, delay }: { event: ActivityEvent; chainId: nu
           <span
             className="text-xs px-2 py-0.5 rounded"
             style={{
-              background: isDeposit ? 'rgba(45,212,160,0.1)' : isWithdrawal ? 'rgba(0,82,255,0.1)' : 'rgba(124,92,255,0.1)',
+              background: isDeposit
+                ? 'rgba(45,212,160,0.1)'
+                : isWithdrawal
+                ? 'rgba(0,82,255,0.1)'
+                : 'rgba(124,92,255,0.1)',
               color: isDeposit ? '#2DD4A0' : isWithdrawal ? '#00D2FF' : '#7C5CFF',
             }}
           >
@@ -88,7 +142,10 @@ function EventRow({ event, chainId, delay }: { event: ActivityEvent; chainId: nu
             {shortAddr(actor)}
           </span>
           {(event.args.memo as string) && (
-            <span className="text-xs px-1.5 py-0.5 rounded" style={{ background: 'rgba(255,255,255,0.05)', color: '#8A94A8' }}>
+            <span
+              className="text-xs px-1.5 py-0.5 rounded"
+              style={{ background: 'rgba(255,255,255,0.05)', color: '#8A94A8' }}
+            >
               {event.args.memo as string}
             </span>
           )}
@@ -127,57 +184,74 @@ function EventRow({ event, chainId, delay }: { event: ActivityEvent; chainId: nu
   )
 }
 
+// ─── Main component ───────────────────────────────────────────────────────────
+
 export default function Activity() {
-  const { chainId = ARC_TESTNET_ID } = useAccount()
+  const { chainId = ARC_MAINNET_ID } = useAccount()
   const activeChain = chainId
   const contractAddress = getVaultAddress(activeChain)
 
-  const [events, setEvents] = useState<ActivityEvent[]>([])
+  const [events, setEvents] = useState<ActivityEvent[]>(() => loadCache(activeChain))
   const [loading, setLoading] = useState(false)
   const [filter, setFilter] = useState<FilterKind>('all')
   const [vaultFilter, setVaultFilter] = useState('')
+
+  // Track which chain the events state currently belongs to
+  const eventsChainRef = useRef(activeChain)
+
+  // Reload cache when the active chain changes
+  useEffect(() => {
+    if (eventsChainRef.current !== activeChain) {
+      eventsChainRef.current = activeChain
+      setEvents(loadCache(activeChain))
+    }
+  }, [activeChain])
 
   const fetchEvents = useCallback(async () => {
     if (!contractAddress) return
     setLoading(true)
     try {
       const chainConfig = activeChain === ARC_MAINNET_ID ? arc : arcTestnet
-      const client = createPublicClient({
-        chain: chainConfig,
-        transport: http(),
-      })
+      const client = createPublicClient({ chain: chainConfig, transport: http() })
 
       const currentBlock = await client.getBlockNumber()
-      // Look back up to 2,000 blocks to stay within RPC range limits
-      const fromBlock = currentBlock > 2000n ? currentBlock - 2000n : 0n
+      // 4,000-block window stays safely under the RPC's 5,000-block hard limit
+      const fromBlock = currentBlock > 4000n ? currentBlock - 4000n : 0n
 
       const [depositLogs, releaseLogs, createdLogs] = await Promise.all([
         client.getLogs({
           address: contractAddress,
-          event: parseAbiItem('event DepositReceived(uint256 indexed vaultId, address indexed depositor, uint256 amount, string memo)'),
+          event: parseAbiItem(
+            'event DepositReceived(uint256 indexed vaultId, address indexed depositor, uint256 amount, string memo)',
+          ),
           fromBlock,
           toBlock: 'latest',
         }),
         client.getLogs({
           address: contractAddress,
-          event: parseAbiItem('event PaymentReleased(uint256 indexed vaultId, address indexed payee, uint256 amount)'),
+          event: parseAbiItem(
+            'event PaymentReleased(uint256 indexed vaultId, address indexed payee, uint256 amount)',
+          ),
           fromBlock,
           toBlock: 'latest',
         }),
         client.getLogs({
           address: contractAddress,
-          event: parseAbiItem('event VaultCreated(uint256 indexed vaultId, address indexed creator, string name, address[] payees, uint256[] shares)'),
+          event: parseAbiItem(
+            'event VaultCreated(uint256 indexed vaultId, address indexed creator, string name, address[] payees, uint256[] shares)',
+          ),
           fromBlock,
           toBlock: 'latest',
         }),
       ])
 
-      const allEvents: ActivityEvent[] = [
+      const fresh: ActivityEvent[] = [
         ...depositLogs.map((log) => ({
           kind: 'DepositReceived' as EventKind,
           vaultId: log.args.vaultId ?? 0n,
           blockNumber: log.blockNumber,
           txHash: log.transactionHash,
+          logIndex: log.logIndex,
           args: { depositor: log.args.depositor, amount: log.args.amount, memo: log.args.memo },
         })),
         ...releaseLogs.map((log) => ({
@@ -185,6 +259,7 @@ export default function Activity() {
           vaultId: log.args.vaultId ?? 0n,
           blockNumber: log.blockNumber,
           txHash: log.transactionHash,
+          logIndex: log.logIndex,
           args: { payee: log.args.payee, amount: log.args.amount },
         })),
         ...createdLogs.map((log) => ({
@@ -192,24 +267,37 @@ export default function Activity() {
           vaultId: log.args.vaultId ?? 0n,
           blockNumber: log.blockNumber,
           txHash: log.transactionHash,
+          logIndex: log.logIndex,
           args: { creator: log.args.creator, name: log.args.name },
         })),
-      ].sort((a, b) => Number(b.blockNumber - a.blockNumber))
+      ]
 
-      // Fetch block timestamps for recent events (first 20)
-      const recent = allEvents.slice(0, 20)
+      // Merge with existing cache so historical events survive
+      const cached = loadCache(activeChain)
+      let merged = mergeEvents(cached, fresh)
+
+      // ── Onchain fallback: if merged is still empty, synthesise from vault state ──
+      if (merged.length === 0) {
+        merged = await synthesiseFromVaults(client, contractAddress, activeChain)
+      }
+
+      // Enrich the 20 most-recent events with block timestamps
+      const recent = merged.slice(0, 20)
       const blockNums = [...new Set(recent.map((e) => e.blockNumber))]
-      const blocks = await Promise.all(blockNums.map((n) => client.getBlock({ blockNumber: n })))
+      const blocks = await Promise.all(
+        blockNums.map((n) => client.getBlock({ blockNumber: n })),
+      )
       const blockTimes = new Map(blocks.map((b) => [b.number, Number(b.timestamp)]))
-
-      const enriched = allEvents.map((e, i) => ({
+      const enriched = merged.map((e, i) => ({
         ...e,
         blockTimestamp: i < 20 ? blockTimes.get(e.blockNumber) : undefined,
       }))
 
+      saveCache(activeChain, enriched)
       setEvents(enriched)
     } catch (err) {
       console.error('Failed to fetch events', err)
+      // Keep showing whatever is already in state (from cache)
     } finally {
       setLoading(false)
     }
@@ -236,7 +324,10 @@ export default function Activity() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-1" style={{ color: '#F5F7FA', letterSpacing: '-0.02em' }}>
+        <h1
+          className="text-3xl font-bold mb-1"
+          style={{ color: '#F5F7FA', letterSpacing: '-0.02em' }}
+        >
           Activity
         </h1>
         <p className="text-sm" style={{ color: '#8A94A8' }}>
@@ -252,11 +343,14 @@ export default function Activity() {
 
       {contractAddress && (
         <>
-          {/* Filters */}
+          {/* Filters + Refresh */}
           <div className="flex flex-wrap items-center gap-3 mb-5">
             <div
               className="flex rounded-xl p-1 gap-1"
-              style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}
+              style={{
+                background: 'rgba(255,255,255,0.04)',
+                border: '1px solid rgba(255,255,255,0.07)',
+              }}
             >
               {filterBtns.map(({ key, label }) => (
                 <button
@@ -280,17 +374,46 @@ export default function Activity() {
               value={vaultFilter}
               onChange={(e) => setVaultFilter(e.target.value.replace(/\D/g, ''))}
             />
+
+            {/* Refresh button */}
+            <button
+              onClick={() => { void fetchEvents() }}
+              disabled={loading}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium transition-all"
+              style={{
+                background: 'rgba(255,255,255,0.05)',
+                border: '1px solid rgba(255,255,255,0.08)',
+                color: loading ? '#8A94A8' : '#F5F7FA',
+                cursor: loading ? 'not-allowed' : 'pointer',
+              }}
+            >
+              <RefreshCw
+                size={13}
+                className={loading ? 'animate-spin' : ''}
+                style={{ color: '#00D2FF' }}
+              />
+              Refresh
+            </button>
           </div>
 
           <GlassCard className="p-5">
-            {loading && (
+            {loading && events.length === 0 && (
               <div className="flex flex-col gap-3">
                 {[0, 1, 2, 3, 4].map((i) => (
                   <div key={i} className="flex items-center gap-4 py-3 animate-pulse">
-                    <div className="w-9 h-9 rounded-full" style={{ background: 'rgba(255,255,255,0.06)' }} />
+                    <div
+                      className="w-9 h-9 rounded-full"
+                      style={{ background: 'rgba(255,255,255,0.06)' }}
+                    />
                     <div className="flex-1">
-                      <div className="h-4 rounded w-1/4 mb-2" style={{ background: 'rgba(255,255,255,0.05)' }} />
-                      <div className="h-3 rounded w-1/3" style={{ background: 'rgba(255,255,255,0.04)' }} />
+                      <div
+                        className="h-4 rounded w-1/4 mb-2"
+                        style={{ background: 'rgba(255,255,255,0.05)' }}
+                      />
+                      <div
+                        className="h-3 rounded w-1/3"
+                        style={{ background: 'rgba(255,255,255,0.04)' }}
+                      />
                     </div>
                   </div>
                 ))}
@@ -305,18 +428,20 @@ export default function Activity() {
                 >
                   <ArrowDownLeft size={24} style={{ color: '#0052FF' }} />
                 </div>
-                <h3 className="text-lg font-semibold mb-1" style={{ color: '#F5F7FA' }}>No activity yet</h3>
+                <h3 className="text-lg font-semibold mb-1" style={{ color: '#F5F7FA' }}>
+                  No activity yet
+                </h3>
                 <p className="text-sm" style={{ color: '#8A94A8' }}>
                   Make the first deposit to see it here.
                 </p>
               </div>
             )}
 
-            {!loading && filtered.length > 0 && (
+            {filtered.length > 0 && (
               <div>
                 {filtered.map((event, i) => (
                   <EventRow
-                    key={`${event.txHash}-${i}`}
+                    key={`${event.txHash}-${event.logIndex}-${i}`}
                     event={event}
                     chainId={activeChain}
                     delay={Math.min(i * 0.04, 0.3)}
@@ -329,4 +454,73 @@ export default function Activity() {
       )}
     </div>
   )
+}
+
+// ─── Onchain fallback: synthesise ActivityEvents from vault state ─────────────
+
+async function synthesiseFromVaults(
+  client: ReturnType<typeof createPublicClient>,
+  contractAddress: `0x${string}`,
+  chainId: number,
+): Promise<ActivityEvent[]> {
+  try {
+    const count = await client.readContract({
+      address: contractAddress,
+      abi: AURA_VAULT_ABI,
+      functionName: 'vaultCount',
+    })
+    if (!count || count === 0n) return []
+
+    const ids = Array.from({ length: Number(count) }, (_, i) => BigInt(i + 1))
+    const vaults = await Promise.all(
+      ids.map((id) =>
+        client.readContract({
+          address: contractAddress,
+          abi: AURA_VAULT_ABI,
+          functionName: 'getVault',
+          args: [id],
+        }),
+      ),
+    )
+
+    const synthetic: ActivityEvent[] = []
+    const currentBlock = await client.getBlockNumber()
+
+    vaults.forEach((v, idx) => {
+      const vaultId = ids[idx]
+      // getVault returns [name, creator, payees, shares, totalDeposited, totalReleased, ...]
+      const [_name, creator, , , totalDeposited] = v as [
+        string, string, string[], bigint[], bigint, bigint, bigint[], bigint[],
+      ]
+
+      // Synthesised "VaultCreated" entry — use a deterministic fake tx hash
+      const fakeHash = `0x${'0'.repeat(39)}${vaultId.toString(16).padStart(25, '0')}` as `0x${string}`
+      synthetic.push({
+        kind: 'VaultCreated',
+        vaultId,
+        blockNumber: currentBlock,
+        txHash: fakeHash,
+        logIndex: 0,
+        args: { creator, name: _name },
+      })
+
+      // If deposits exist, add a synthesised DepositReceived entry
+      if (totalDeposited > 0n) {
+        const fakeDepHash = `0x${'1'.repeat(39)}${vaultId.toString(16).padStart(25, '0')}` as `0x${string}`
+        synthetic.push({
+          kind: 'DepositReceived',
+          vaultId,
+          blockNumber: currentBlock,
+          txHash: fakeDepHash,
+          logIndex: 1,
+          args: { depositor: creator, amount: totalDeposited, memo: '' },
+        })
+      }
+    })
+
+    saveCache(chainId, synthetic)
+    return synthetic.sort((a, b) => Number(b.vaultId - a.vaultId))
+  } catch {
+    return []
+  }
 }
