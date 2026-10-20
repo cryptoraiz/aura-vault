@@ -1,6 +1,6 @@
 /**
  * wagmi configuration for Aura Vault
- * Supports Arc Testnet (default) and Arc Mainnet (for network toggle).
+ * Arc Mainnet is the primary chain; Arc Testnet is available via the network toggle.
  */
 
 import { http, createConfig } from 'wagmi'
@@ -16,7 +16,7 @@ export const ARC_TESTNET_ID = 5042002
 export const ARC_MAINNET_ID = 5042
 
 export const config = createConfig({
-  chains: [arcTestnet, arc],
+  chains: [arc, arcTestnet], // arc first → wagmi treats it as the default chain
   connectors: [injected()],
   transports: {
     [arcTestnet.id]: http(),

@@ -1,7 +1,8 @@
 import { Link, useLocation } from 'react-router-dom'
 import { ConnectKitButton } from 'connectkit'
 import { useAccount, useSwitchChain } from 'wagmi'
-import { Plus, Activity, Wallet, LayoutGrid, AlertTriangle } from 'lucide-react'
+import { useEffect } from 'react'
+import { Plus, Activity, Wallet, LayoutGrid } from 'lucide-react'
 import auraLogo from '../assets/aura-vault-logo.svg'
 import Wordmark from './Wordmark'
 import { ARC_TESTNET_ID, ARC_MAINNET_ID } from '../config'
@@ -15,14 +16,14 @@ interface NetworkPillProps {
 }
 
 function NetworkPill({ chainId, onSwitch, size = 'md' }: NetworkPillProps) {
+  // When chainId is undefined (wallet not connected) show Mainnet as the default
+  // undefined (disconnected) renders as Mainnet — the app's default network
   const isTestnet = chainId === ARC_TESTNET_ID
-  const isMainnet = chainId === ARC_MAINNET_ID
-  const label = isMainnet ? 'Arc Mainnet' : 'Arc Testnet'
-  // Amber glow for testnet, cyan-green for mainnet
-  const dotColor = isMainnet ? '#2DD4A0' : '#F5B544'
-  const dotGlow = isMainnet
-    ? '0 0 6px 2px rgba(45,212,160,0.6)'
-    : '0 0 6px 2px rgba(245,181,68,0.6)'
+  const label = isTestnet ? 'Arc Testnet' : 'Arc Mainnet'
+  const dotColor = isTestnet ? '#F5B544' : '#2DD4A0'
+  const dotGlow = isTestnet
+    ? '0 0 6px 2px rgba(245,181,68,0.6)'
+    : '0 0 6px 2px rgba(45,212,160,0.6)'
   const target = isTestnet ? ARC_MAINNET_ID : ARC_TESTNET_ID
 
   const px = size === 'sm' ? 'px-2.5 py-1' : 'px-3 py-1.5'
@@ -45,7 +46,7 @@ function NetworkPill({ chainId, onSwitch, size = 'md' }: NetworkPillProps) {
         className="w-1.5 h-1.5 rounded-full flex-shrink-0"
         style={{ background: dotColor, boxShadow: dotGlow }}
       />
-      <span style={{ color: isMainnet ? '#2DD4A0' : '#F5B544' }}>{label}</span>
+      <span style={{ color: isTestnet ? '#F5B544' : '#2DD4A0' }}>{label}</span>
     </button>
   )
 }
@@ -56,12 +57,16 @@ interface LayoutProps {
 }
 
 export default function Layout({ children, hideNav }: LayoutProps) {
-  const { address, chainId } = useAccount()
+  const { chainId, isConnected } = useAccount()
   const { switchChain } = useSwitchChain()
   const location = useLocation()
 
-  const isArc = chainId === ARC_TESTNET_ID || chainId === ARC_MAINNET_ID
-  const isWrongNetwork = address && !isArc
+  // Auto-switch to Arc Mainnet as soon as a wallet connects on any other chain
+  useEffect(() => {
+    if (isConnected && chainId !== ARC_MAINNET_ID && chainId !== ARC_TESTNET_ID) {
+      switchChain({ chainId: ARC_MAINNET_ID })
+    }
+  }, [isConnected, chainId, switchChain])
 
   const navLinks = [
     { to: '/', label: 'My Vaults', icon: LayoutGrid },
@@ -83,23 +88,6 @@ export default function Layout({ children, hideNav }: LayoutProps) {
           background: 'radial-gradient(ellipse 80% 40% at 50% -10%, rgba(0,82,255,0.18) 0%, transparent 70%)',
         }}
       />
-
-      {/* Wrong network banner */}
-      {isWrongNetwork && (
-        <div
-          className="sticky top-0 z-50 flex items-center justify-center gap-3 px-4 py-3 text-sm font-medium"
-          style={{ background: 'rgba(245, 181, 68, 0.15)', borderBottom: '1px solid rgba(245,181,68,0.25)', color: '#F5B544' }}
-        >
-          <AlertTriangle size={16} />
-          <span>You are on the wrong network.</span>
-          <button
-            onClick={() => switchChain({ chainId: ARC_TESTNET_ID })}
-            className="underline hover:no-underline"
-          >
-            Switch to Arc Testnet
-          </button>
-        </div>
-      )}
 
       {/* Top navigation — hidden on /pay/:id */}
       {!hideNav && (
